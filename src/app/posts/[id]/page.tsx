@@ -32,7 +32,12 @@ export default async function PostPage({
   }
 
   // Fetch reviewers for this post
-  const reviewers = data.reviewers ?? [];
+  const reviewers: Array<{
+    id: string;
+    name: string;
+    review: string;
+    photoUrl?: string | null;
+  }> = data.reviewers ?? [];
 
   return (
     <article className="max-w-4xl mx-auto space-y-8">
