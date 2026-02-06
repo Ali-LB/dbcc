@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import type { Session } from 'next-auth';
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    revalidateTag('events');
     return NextResponse.json({ event }, { status: 201 });
   } catch (error) {
     console.error('Create event error:', error);
@@ -127,6 +129,7 @@ export async function PUT(request: NextRequest) {
       }
     });
 
+    revalidateTag('events');
     return NextResponse.json({ event });
   } catch (error) {
     console.error('Update event error:', error);

@@ -5,22 +5,41 @@ import type { Post } from "@prisma/client";
 import { PinnedSection } from "@/components/PinnedSection";
 import { HeroPost } from "@/components/HeroPost";
 import { BuyMeACoffee } from "@/components/BuyMeACoffee";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 3600;
+
+const getHeroPost = unstable_cache(
+  async () => {
+    return prisma.post.findFirst({
+      where: { published: true, isHero: true },
+    });
+  },
+  ["hero-post"],
+  { tags: ["posts", "hero"] }
+);
+
+const getLatestPosts = unstable_cache(
+  async (excludeId?: string) => {
+    return prisma.post.findMany({
+      where: {
+        published: true,
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+  },
+  ["latest-posts"],
+  { tags: ["posts"] }
+);
 
 export default async function Home() {
   // Fetch hero post
-  const heroPost = await prisma.post.findFirst({
-    where: { published: true, isHero: true },
-  });
+  const heroPost = await getHeroPost();
 
   // Fetch latest posts (excluding hero post)
-  const latestPosts = await prisma.post.findMany({
-    where: {
-      published: true,
-      ...(heroPost ? { id: { not: heroPost.id } } : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
+  const latestPosts = await getLatestPosts(heroPost?.id);
 
   const pinnedPosts = latestPosts.slice(0, 3);
   const remainingPosts = latestPosts.slice(3);

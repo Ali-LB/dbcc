@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
@@ -24,6 +25,9 @@ export async function POST(request: NextRequest) {
       data: { isHero: true },
     });
 
+    revalidateTag("posts");
+    revalidateTag("hero");
+    revalidateTag(`post:${postId}`);
     return NextResponse.json(updatedPost);
   } catch (error) {
     console.error("Error setting hero post:", error);
@@ -42,6 +46,8 @@ export async function DELETE() {
       data: { isHero: false },
     });
 
+    revalidateTag("posts");
+    revalidateTag("hero");
     return NextResponse.json({ message: "Hero post unset" });
   } catch (error) {
     console.error("Error unsetting hero post:", error);

@@ -2,12 +2,23 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import type { Post } from "@prisma/client";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 3600;
+
+const getPublishedPosts = unstable_cache(
+  async () => {
+    return prisma.post.findMany({
+      where: { published: true },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+  ["published-posts"],
+  { tags: ["posts"] }
+);
 
 export default async function PostsPage() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const posts = await getPublishedPosts();
 
   return (
     <div className="space-y-8">

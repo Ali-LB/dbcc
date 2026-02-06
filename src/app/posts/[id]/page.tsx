@@ -1,6 +1,8 @@
-import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { headers } from "next/headers";
+
+export const revalidate = 3600;
 
 export default async function PostPage({
   params,
@@ -9,19 +11,28 @@ export default async function PostPage({
 }) {
   const { id } = await params;
 
-  const post = await prisma.post.findUnique({
-    where: { id },
+  const h = headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const baseUrl = host ? `${proto}://${host}` : "";
+
+  const res = await fetch(`${baseUrl}/api/posts/${id}`, {
+    next: { tags: [`post:${id}`] },
   });
+
+  if (!res.ok) {
+    notFound();
+  }
+
+  const data = await res.json();
+  const post = data.post;
 
   if (!post || !post.published) {
     notFound();
   }
 
   // Fetch reviewers for this post
-  const reviewers = await prisma.postReview.findMany({
-    where: { postId: id },
-    orderBy: { createdAt: "asc" },
-  });
+  const reviewers = data.reviewers ?? [];
 
   return (
     <article className="max-w-4xl mx-auto space-y-8">
