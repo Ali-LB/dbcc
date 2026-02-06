@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
 type ReviewerData = {
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
       });
     }
     
+    revalidateTag('posts');
     return NextResponse.json(post);
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
@@ -61,6 +63,8 @@ export async function PUT(req: NextRequest) {
       }
     }
     
+    revalidateTag('posts');
+    revalidateTag(`post:${id}`);
     return NextResponse.json(post);
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
@@ -71,6 +75,8 @@ export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json();
     await prisma.post.delete({ where: { id } });
+    revalidateTag('posts');
+    revalidateTag(`post:${id}`);
     return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
