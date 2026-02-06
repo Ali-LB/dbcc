@@ -54,9 +54,14 @@ export default async function PostPage({
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">{post.title}</h1>
         <div className="flex items-center gap-4 text-[#ede0d4]">
-          <time dateTime={post.createdAt.toISOString()}>
-            {new Date(post.createdAt).toLocaleDateString()}
-          </time>
+          {(() => {
+            const createdAt = new Date(post.createdAt);
+            return (
+              <time dateTime={createdAt.toISOString()}>
+                {createdAt.toLocaleDateString()}
+              </time>
+            );
+          })()}
           <span>•</span>
           <span>Score: {post.score}/10</span>
         </div>
