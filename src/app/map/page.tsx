@@ -110,7 +110,7 @@ export default function MapPage() {
       <h1 className="text-4xl font-bold mb-6 text-center">
         Dearborn Coffee Map
       </h1>
-      <p className="text-center mb-8 text-lg text-[#7f5539]">
+      <p className="text-center mb-8 text-lg">
         Explore coffee shops in Dearborn, MI. Click a coffee icon to see shop
         details and reviews!
       </p>
