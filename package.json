@@ -20,7 +20,7 @@
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.517.0",
-    "next": "^15.3.4",
+    "next": "15.3.8",
     "next-auth": "^4.24.11",
     "nominatim-browser": "^2.1.0",
     "prisma": "^6.10.0",
