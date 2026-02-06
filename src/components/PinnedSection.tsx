@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 
 interface PinnedSectionProps {
   posts: Post[];

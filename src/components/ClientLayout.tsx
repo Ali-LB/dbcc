@@ -12,7 +12,7 @@ import {
   List,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [showDropdown, setShowDropdown] = useState(false);

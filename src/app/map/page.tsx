@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 import type { CoffeeShop } from "@/components/CoffeeShopMarker";
 import { MapControls } from "@/components/MapControls";
 

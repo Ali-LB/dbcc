@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 
 interface HeroPostProps {
   post: Post;

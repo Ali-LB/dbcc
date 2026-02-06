@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 import { PinnedSection } from "@/components/PinnedSection";
 import { HeroPost } from "@/components/HeroPost";
 import { BuyMeACoffee } from "@/components/BuyMeACoffee";

@@ -1,4 +1,4 @@
-import type { CoffeeShop, Post } from "@/generated/prisma";
+import type { CoffeeShop, Post } from "@prisma/client";
 
 export type CoffeeShopWithPosts = CoffeeShop & {
   posts: Post[];

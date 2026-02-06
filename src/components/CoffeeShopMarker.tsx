@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Marker, Popup } from "react-leaflet";
 import Image from "next/image";
 import Link from "next/link";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 import type { DivIcon } from "leaflet";
 
 export interface CoffeeShop {

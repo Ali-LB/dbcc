@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
-import type { Post } from "@/generated/prisma";
+import type { Post } from "@prisma/client";
 
 export default async function PostsPage() {
   const posts = await prisma.post.findMany({
