@@ -22,7 +22,7 @@ export default async function PostsPage() {
 
   return (
     <div className="space-y-8">
-      <section className="text-center py-12 bg-gray-100 rounded-lg">
+      <section className="text-center py-12 bg-gray-100/0 rounded-lg">
         <h1 className="text-4xl font-bold">Blog Posts</h1>
         <p className="mt-4 text-xl">Explore our latest articles and reviews</p>
       </section>
