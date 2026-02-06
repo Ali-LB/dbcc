@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
+import type { Session } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET - Fetch all users
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session | null;
     let isAdmin = false;
     if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
       isAdmin = (session.user as { name?: string }).name === 'admin';
@@ -50,7 +51,7 @@ export async function GET() {
 // PUT - Update user
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session | null;
     let isAdmin = false;
     if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
       isAdmin = (session.user as { name?: string }).name === 'admin';
@@ -118,7 +119,7 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete user
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session | null;
     let isAdmin = false;
     if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
       isAdmin = (session.user as { name?: string }).name === 'admin';

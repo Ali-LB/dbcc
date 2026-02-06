@@ -5,11 +5,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Post } from "@/generated/prisma";
-import {
-  CoffeeShopMarker,
-  type CoffeeShop,
-} from "@/components/CoffeeShopMarker";
+import type { CoffeeShop } from "@/components/CoffeeShopMarker";
 import { MapControls } from "@/components/MapControls";
+
+type LeafletModule = typeof import("leaflet");
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -26,13 +25,10 @@ const Marker = dynamic(
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
-import L from "leaflet";
-
-function createIcon(imageUrl: string) {
-  return L.divIcon({
-    html: `<div style="background: white; border-radius: 9999px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); overflow: hidden; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border: 2px solid #b08968;"><img src='${imageUrl}' style='width: 52px; height: 52px; object-fit: cover; border-radius: 9999px;'/></div>`,
-  });
-}
+const CoffeeShopMarker = dynamic(
+  () => import("@/components/CoffeeShopMarker").then((mod) => mod.CoffeeShopMarker),
+  { ssr: false }
+);
 
 export default function MapPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -41,6 +37,22 @@ export default function MapPage() {
   const [showCoffeeShops, setShowCoffeeShops] = useState(true);
   const [showPosts, setShowPosts] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [leaflet, setLeaflet] = useState<LeafletModule | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    import("leaflet")
+      .then((mod) => {
+        if (!mounted) return;
+        setLeaflet(mod);
+      })
+      .catch((error) => {
+        console.error("Error loading leaflet:", error);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     Promise.all([
@@ -70,6 +82,13 @@ export default function MapPage() {
       setLoading(false);
     });
   }, []);
+
+  const createIcon = (imageUrl: string) => {
+    if (!leaflet) return undefined;
+    return leaflet.divIcon({
+      html: `<div style="background: white; border-radius: 9999px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); overflow: hidden; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border: 2px solid #b08968;"><img src='${imageUrl}' style='width: 52px; height: 52px; object-fit: cover; border-radius: 9999px;'/></div>`,
+    });
+  };
 
   // Filter coffee shops based on search term
   const filteredCoffeeShops = coffeeShops.filter(
@@ -109,12 +128,17 @@ export default function MapPage() {
 
           {/* Coffee Shop Markers */}
           {showCoffeeShops &&
+            leaflet &&
             filteredCoffeeShops.map((shop) => (
-              <CoffeeShopMarker key={shop.placeId} shop={shop} />
+              <CoffeeShopMarker
+                key={shop.placeId ?? `${shop.name}-${shop.latitude}-${shop.longitude}`}
+                shop={shop}
+              />
             ))}
 
           {/* Post Markers (for posts not associated with coffee shops) */}
           {showPosts &&
+            leaflet &&
             Object.entries(
               posts.reduce((acc: Record<string, Post[]>, post: Post) => {
                 if (!post.latitude || !post.longitude) return acc;
@@ -146,7 +170,7 @@ export default function MapPage() {
                     <div className="flex flex-col gap-4">
                       {group.slice(0, 5).map((post: Post) => (
                         <div
-                          key={post.id}
+                          key={post.id ?? `${post.title}-${post.createdAt}`}
                           className="flex items-center gap-3 border-b last:border-b-0 pb-2 last:pb-0"
                         >
                           <Image

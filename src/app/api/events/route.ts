@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
+import type { Session } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session | null;
     let userId: string | undefined = undefined;
     if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'id' in session.user) {
       userId = (session.user as { id?: string }).id;
@@ -54,7 +55,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as Session | null;
   let isAdmin = false;
   if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
     isAdmin = (session.user as { name?: string }).name === 'admin';
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as Session | null;
   let isAdmin = false;
   if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
     isAdmin = (session.user as { name?: string }).name === 'admin';
@@ -137,7 +138,7 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as Session | null;
   let isAdmin = false;
   if (session && typeof session === 'object' && 'user' in session && session.user && typeof session.user === 'object' && 'name' in session.user) {
     isAdmin = (session.user as { name?: string }).name === 'admin';

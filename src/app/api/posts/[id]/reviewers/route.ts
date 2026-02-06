@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const reviewers = await prisma.postReview.findMany({
-      where: { postId: params.id },
+      where: { postId: id },
       orderBy: { createdAt: "asc" },
     });
     return NextResponse.json(reviewers);
@@ -22,9 +23,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { name, photoUrl, review } = await request.json();
     
     const reviewer = await prisma.postReview.create({
@@ -32,7 +34,7 @@ export async function POST(
         name,
         photoUrl,
         review,
-        postId: params.id,
+        postId: id,
       },
     });
     
